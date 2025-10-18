@@ -1,0 +1,21 @@
+{
+  "name": "medistock-clean-routes",
+  "version": "1.1.0",
+  "description": "MediStock with map + routing (OSRM) and auto-initializing SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js",
+    "reset": "node seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.4",
+    "jsonwebtoken": "^9.0.2",
+    "pdfkit": "^0.15.0",
+    "qrcode": "^1.5.3",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1"
+  }
+}
