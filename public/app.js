@@ -843,6 +843,8 @@
 
     const btnReserve = el('btnReserve');
     if(btnReserve){
+      // Aplicar clase especial para hacerlo más visible
+      btnReserve.className = 'btn reserve-highlight';
       btnReserve.onclick = async()=>{
         const selDisp = el('selDisp');
         const reserveInfo = el('reserveInfo');
@@ -949,10 +951,10 @@
     el('dispenserStep1').classList.add('active');
     el('dispenserStep1').classList.remove('hidden');
     
-    // Limpiar campos
-    el('dispenserCC').value = '';
-    el('dispenserPassword').value = '';
-    el('dispenserSystemKey').value = '';
+    // NUEVO: Predefinir datos de prueba
+    el('dispenserCC').value = '12345678';
+    el('dispenserPassword').value = 'ana12345';
+    el('dispenserSystemKey').value = 'admin123';
     el('dispenserPickupCode').value = '';
     
     // Enfocar el primer campo

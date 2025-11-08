@@ -513,3 +513,99 @@ tr:hover { background: #f8f9fa; }
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
 }
+
+
+/* Estilo mejorado para el botón de reserva - MÁS VISIBLE */
+.btn.reserve-highlight {
+  background: linear-gradient(135deg, #ff6b35, #ff8e53);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.reserve-highlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn.reserve-highlight:hover::before {
+  left: 100%;
+}
+
+.btn.reserve-highlight:hover {
+  background: linear-gradient(135deg, #e55a2b, #ff7a3a);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+}
+
+.btn.reserve-highlight:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+/* Efecto de pulso para llamar más la atención */
+@keyframes pulse-reserve {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 107, 53, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 53, 0);
+  }
+}
+
+.btn.reserve-highlight {
+  animation: pulse-reserve 2s infinite;
+}
+
+/* Estilo para campos predefinidos en modo dispensador */
+.dispenser-input[value]:not([value=""]) {
+  background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+  border-color: #27ae60;
+  font-weight: bold;
+}
+
+.dispenser-input[value="admin123"] {
+  background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
+  border-color: #3498db;
+}
+
+/* Mejorar visibilidad de los campos con datos predefinidos */
+.dispenser-input-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dispenser-input-group label::after {
+  content: '✓ Predefinido';
+  font-size: 12px;
+  color: #27ae60;
+  font-weight: normal;
+  background: #e8f5e8;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 10px;
+}
+
+.dispenser-input-group label:has(+ .dispenser-input[value="admin123"])::after {
+  content: '🔐 Predefinido';
+  background: #e8f4fd;
+  color: #3498db;
+}
