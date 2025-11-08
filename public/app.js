@@ -18,6 +18,38 @@
     headers: { 'Content-Type': 'application/json', ...(token?{'Authorization':`Bearer ${token}`}:{}) }
   }).then(r => r.json());
 
+// Agrega esto al inicio de tu app.js, después de las declaraciones de variables
+function initResponsiveFeatures() {
+  // Detectar si es móvil
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+    console.log('Dispositivo móvil detectado, aplicando optimizaciones...');
+    document.body.classList.add('mobile-device');
+    
+    // Optimizar mapa para móviles
+    if (map) {
+      map.dragging.enable();
+      map.touchZoom.enable();
+      map.doubleClickZoom.enable();
+      map.scrollWheelZoom.enable();
+    }
+  } else {
+    document.body.classList.add('desktop-device');
+  }
+}
+
+// Llamar esta función en DOMContentLoaded
+document.addEventListener('DOMContentLoaded', ()=>{ 
+  bindGlobalUI(); 
+  bindNavUI(); 
+  bindProfileEditUI(); 
+  bindProfileUI();
+  initDispenserUI();
+  initResponsiveFeatures(); // <-- Agrega esta línea
+});
+
+  
   function ensureRouting(){
     if(!routingCtl && typeof L !== 'undefined'){
       routingCtl = L.Routing.control({
