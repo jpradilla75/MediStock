@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MediStock</title>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
+</head>
+<body>
+<div class="container">
+
+  <!-- Topbar compacta -->
+  <header class="topbar">
+    <div class="brand">MediStock</div>
+    <nav class="actions">
+      <button id="btnProfile" class="btn blue">Perfil</button>
+      <button id="btnHome" class="btn blue">Inicio</button>
+      <button id="btnDispenserMode" class="btn green">Modo Dispensador</button>
+      <button id="btnLogout" class="btn red">Salir</button>
+    </nav>
+  </header>
+
+  <!-- HERO: logo centrado + título + subtítulo -->
+  <section class="hero">
+    <img src="medistock-logo.png" alt="MediStock Logo" class="logo">
+    <h1 class="title">MediStock</h1>
+    <p class="subtitle">Sistema Inteligente de Dispensadores de Medicamentos</p>
+  </section>
+
+  <!-- AUTENTICACIÓN debajo del logo -->
+  <section id="authSection" class="card">
+    <h2>Autenticación</h2>
+    <label>Email <input id="email" value="ana@medistock.local"/></label>
+    <label>Contraseña <input id="password" type="password" value="ana12345"/></label>
+    <div class="row">
+      <button id="btnLogin" class="btn blue">Ingresar</button>
+    </div>
+    <div id="authMsg" class="muted"></div>
+  </section>
+
+  <!-- Resto de tu app (igual que lo tenías) -->
+  <section id="appSection" class="hidden">
+    <h2>Mis fórmulas</h2>
+    <div class="row"><button id="btnRefresh" class="btn">Actualizar entregas</button><span class="muted">Auto-actualiza cada 30s</span></div>
+    <table id="tblRx"></table>
+
+    <h2>Mapa de dispensadores</h2>
+    <div class="row">
+      <button id="btnLocate" class="btn">Mi ubicación</button>
+      <button id="btnRoute" class="btn">Ruta al dispensador seleccionado</button>
+      <span class="muted">Clic en un marcador para ver stock</span>
+    </div>
+    <div id="map"></div>
+
+    <h2>Inventario por dispensador (solo meds en mis fórmulas)</h2>
+    <label>Dispensador <select id="selDisp"></select></label>
+    <div id="inventory"></div>
+    <div class="row">
+      <button id="btnReserve" class="btn">Reservar seleccionados (1 código)</button>
+      <span id="reserveInfo" class="muted"></span>
+    </div>
+
+    <!-- OCULTAR SECCIÓN DE RETIRO POR CÓDIGO -->
+    <!-- <h2>Retirar por código</h2>
+    <label>Código <input id="pickupCode" placeholder="######"/></label>
+    <button id="btnPickup" class="btn">Retirar</button>
+    <div id="pickupMsg"></div> -->
+
+    <h2>Sugerencias para completar pendientes (ordenadas por distancia/stock)</h2>
+    <div id="suggestions"></div>
+
+    <h2>Historial de entregas</h2>
+    <div id="history"></div>
+  </section>
+
+  <section id="profileSection" class="hidden">
+    <h2>Mi perfil</h2>
+    <div class="grid2">
+      <label>Nombre completo <input id="pf_name" disabled/></label>
+      <label>Documento (CC) <input id="pf_cc" disabled/></label>
+      <label>Fecha de nacimiento <input id="pf_dob" type="date" disabled/></label>
+      <label>Edad <input id="pf_age" disabled/></label>
+      <label>Género
+        <select id="pf_gender" disabled>
+          <option value="">--</option>
+          <option value="F">Femenino</option>
+          <option value="M">Masculino</option>
+          <option value="NB">No binario</option>
+          <option value="ND">Prefiero no decirlo</option>
+        </select>
+      </label>
+      <label>EPS <input id="pf_eps" disabled/></label>
+      <label>IPS <input id="pf_ips" disabled/></label>
+      <label>Correo <input id="pf_email" disabled/></label>
+      <label>Teléfono <input id="pf_phone" disabled/></label>
+      <label>Ciudad <input id="pf_city" disabled/></label>
+      <label>Dirección <input id="pf_address" disabled/></label>
+      <label>Tipo de sangre <input id="pf_blood" disabled/></label>
+      <label>Contacto de emergencia <input id="pf_econtact" disabled/></label>
+      <label>Teléfono de emergencia <input id="pf_ephone" disabled/></label>
+    </div>
+    <div class="row">
+      <button id="btnEditProfile" type="button" class="btn">Editar</button>
+      <button id="btnSaveProfile" type="button" class="btn">Guardar cambios</button>
+      <span id="pfMsg" class="muted"></span>
+    </div>
+    <h3>Cambiar contraseña</h3>
+    <div class="grid3">
+      <label>Actual <input id="pf_oldpass" type="password"/></label>
+      <label>Nueva <input id="pf_newpass" type="password"/></label>
+      <label>&nbsp;<button id="btnChangePass" class="btn">Cambiar contraseña</button></label>
+    </div>
+    <div id="pfPassMsg" class="muted"></div>
+  </section>
+
+  <!-- PANTALLA DISPENSADOR FÍSICO MEJORADA -->
+  <section id="dispenserSection" class="hidden">
+    <div class="dispenser-container">
+      <div class="dispenser-header">
+        <img src="medistock-logo.png" alt="MediStock Logo" class="dispenser-logo">
+        <h1 class="dispenser-title">DISPENSADOR AUTOMÁTICO MEDISTOCK</h1>
+        <p class="dispenser-subtitle">Sistema Inteligente de Entrega de Medicamentos</p>
+      </div>
+      
+      <div class="dispenser-screen">
+        <div id="dispenserStep1" class="dispenser-step active">
+          <div class="dispenser-icon">👤</div>
+          <h2>IDENTIFICACIÓN DEL PACIENTE</h2>
+          <div class="dispenser-input-group">
+            <label>Número de Cédula:</label>
+            <input type="text" id="dispenserCC" placeholder="Ingrese su cédula" maxlength="10" class="dispenser-input">
+          </div>
+          <div class="dispenser-input-group">
+            <label>Contraseña:</label>
+            <input type="password" id="dispenserPassword" placeholder="Ingrese su contraseña" class="dispenser-input">
+          </div>
+          <button id="btnVerifyCC" class="dispenser-btn primary">VERIFICAR IDENTIDAD</button>
+        </div>
+        
+        <div id="dispenserStep2" class="dispenser-step hidden">
+          <div class="dispenser-icon">🔑</div>
+          <h2>VALIDACIÓN DEL SISTEMA</h2>
+          <div class="dispenser-input-group">
+            <label>Clave del Operador:</label>
+            <input type="password" id="dispenserSystemKey" placeholder="Clave de seguridad" class="dispenser-input">
+          </div>
+          <div class="dispenser-buttons">
+            <button id="btnVerifySystemKey" class="dispenser-btn primary">VALIDAR ACCESO</button>
+            <button id="btnBackToStep1" class="dispenser-btn secondary">VOLVER</button>
+          </div>
+        </div>
+        
+        <div id="dispenserStep3" class="dispenser-step hidden">
+          <div class="dispenser-icon">📋</div>
+          <h2>CÓDIGO DE RETIRO</h2>
+          <div class="dispenser-input-group">
+            <label>Código de Reserva (6 dígitos):</label>
+            <input type="text" id="dispenserPickupCode" placeholder="Ej: A1B2C3" maxlength="6" class="dispenser-input" style="font-size: 24px; letter-spacing: 3px;">
+          </div>
+          <div class="dispenser-buttons">
+            <button id="btnProcessPickup" class="dispenser-btn primary">PROCESAR RETIRO</button>
+            <button id="btnBackToStep2" class="dispenser-btn secondary">VOLVER</button>
+          </div>
+        </div>
+        
+        <div id="dispenserStep4" class="dispenser-step hidden">
+          <div id="dispenserAnimation" class="dispenser-animation">
+            <div class="pill-container">
+              <div class="pill pill-1">💊</div>
+              <div class="pill pill-2">💊</div>
+              <div class="pill pill-3">💊</div>
+              <div class="pill pill-4">💊</div>
+              <div class="pill pill-5">💊</div>
+            </div>
+            <div class="conveyor-belt"></div>
+          </div>
+          <h2 id="dispenserResultTitle">PROCESANDO RETIRO...</h2>
+          <div id="dispenserResultContent" class="dispenser-result">
+            <!-- Aquí se mostrará el resultado -->
+          </div>
+          <button id="btnNewPickup" class="dispenser-btn primary">NUEVO RETIRO</button>
+        </div>
+      </div>
+      
+      <div class="dispenser-footer">
+        <div class="dispenser-status">
+          <span class="status-indicator online"></span>
+          <span>Sistema en Línea</span>
+        </div>
+        <p class="dispenser-help">Para asistencia, contacte al administrador del sistema</p>
+        <button id="btnExitDispenser" class="dispenser-btn exit">SALIR DEL MODO DISPENSADOR</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
