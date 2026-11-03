@@ -911,7 +911,7 @@ tr:hover { background: #f8f9fa; }
   }
 }
 
-/* Ajustes para móviles  pequeños (menos de 360px) */
+/* Ajustes para móviles muy pequeños (menos de 360px) */
 @media (max-width: 359px) {
   .container {
     padding: 10px;
