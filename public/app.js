@@ -18,7 +18,7 @@
     headers: { 'Content-Type': 'application/json', ...(token?{'Authorization':`Bearer ${token}`}:{}) }
   }).then(r => r.json());
 
-// Agrega esto al inicio de tu app.js, después de las declaraciones de var
+// Agrega esto al inicio de tu app.js, después de las declaraciones de variables
 function initResponsiveFeatures() {
   // Detectar si es móvil
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
